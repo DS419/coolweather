@@ -56,6 +56,7 @@ public class CoolWeatherDB {
                 list.add(province);
             }   while (cursor.moveToNext());
         }
+        cursor.close();
         return list;
     }
 
@@ -72,14 +73,17 @@ public class CoolWeatherDB {
     public List<City> loadCities(int provinceId) {
         List<City> list = new ArrayList<City>();
         Cursor cursor = db.query("City", null, "province_id = ?", new String[]{String.valueOf(provinceId)}, null, null, null);
-        do {
-            City city = new City();
-            city.setId(cursor.getInt(cursor.getColumnIndex("id")));
-            city.setCityName(cursor.getString(cursor.getColumnIndex("city_name")));
-            city.setCityCode(cursor.getString(cursor.getColumnIndex("city_code")));
-            city.setProvinceId(provinceId);
-            list.add(city);
-        }   while (cursor.moveToNext());
+        if (cursor.moveToFirst()) {
+            do {
+                City city = new City();
+                city.setId(cursor.getInt(cursor.getColumnIndex("id")));
+                city.setCityName(cursor.getString(cursor.getColumnIndex("city_name")));
+                city.setCityCode(cursor.getString(cursor.getColumnIndex("city_code")));
+                city.setProvinceId(provinceId);
+                list.add(city);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
         return list;
     }
 
@@ -94,16 +98,20 @@ public class CoolWeatherDB {
     }
 
 
-    public List<Country> loadCountry(int cityId) {
+    public List<Country> loadCountries(int cityId) {
         List<Country> list = new ArrayList<Country>();
         Cursor cursor = db.query("Country", null, "city_id = ?", new String[]{String.valueOf(cityId)}, null, null, null);
         if (cursor.moveToFirst()) {
-            Country country = new Country();
-            country.setId(cursor.getInt(cursor.getColumnIndex("id")));
-            country.setCountryName(cursor.getString(cursor.getColumnIndex("country_name")));
-            country.setCountryCode(cursor.getString(cursor.getColumnIndex("country_code")));
-            country.setCityId(cityId);
-        }   while (cursor.moveToNext());
+            do {
+                Country country = new Country();
+                country.setId(cursor.getInt(cursor.getColumnIndex("id")));
+                country.setCountryName(cursor.getString(cursor.getColumnIndex("country_name")));
+                country.setCountryCode(cursor.getString(cursor.getColumnIndex("country_code")));
+                country.setCityId(cityId);
+                list.add(country);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
         return list;
     }
 }
